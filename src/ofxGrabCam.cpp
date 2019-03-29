@@ -87,10 +87,10 @@ void ofxGrabCam::end() {
 	// but before camera.end()
 	if (this->userSettings.cursorDraw.enabled) {
 		//cursorDraw.size is in normalized screen coords
-		const auto viewToCursor = this->tracking.mouse.world * this->getModelViewMatrix();
+		glm::vec4 temp =   this->getModelViewMatrix() * glm::vec4(this->tracking.mouse.world,1.0 ) ;
+		const glm::vec3 viewToCursor = glm::vec3(temp)/temp.w;
 		const auto viewHeightAtCursor = tan(this->getFov() / 2.0f * DEG_TO_RAD) * viewToCursor.z * 2.0f;
 		auto size = this->userSettings.cursorDraw.size * viewHeightAtCursor;
-		
 		const auto pxToWorldAtCursor = viewHeightAtCursor / this->view.viewport.getHeight();
 		
 		ofPushStyle();
@@ -159,7 +159,7 @@ void ofxGrabCam::reset() {
 	ofCamera::setNearClip(0.1);
 	ofCamera::setFarClip(1000.0f);
 	this->setPosition(1.0f, 1.0f, -1.0f);
-	this->lookAt(ofVec3f());
+	this->lookAt(glm::vec3());
 }
 
 //--------------------------
@@ -168,13 +168,13 @@ void ofxGrabCam::updateCursorWorld() {
 }
 
 //--------------------------
-const ofVec3f & ofxGrabCam::getCursorWorld() const {
+const glm::vec3 & ofxGrabCam::getCursorWorld() const {
 	return this->tracking.mouse.world;
 }
 
 //--------------------------
-ofVec3f ofxGrabCam::getCursorProjected() const {
-	return ofVec3f(this->tracking.mouse.viewport.position.x,
+glm::vec3 ofxGrabCam::getCursorProjected() const {
+	return glm::vec3(this->tracking.mouse.viewport.position.x,
 		this->tracking.mouse.viewport.position.y,
 		this->tracking.mouse.projectedDepth);
 }
@@ -362,20 +362,27 @@ void ofxGrabCam::mouseDragged(ofMouseEventArgs & args) {
 	switch (action) {
 	case Action::Orbit:
 	{
-		auto arcEnd = ofVec3f(mouseMovement.x, -mouseMovement.y, -this->userSettings.trackballRadius * this->view.viewport.getWidth()).getNormalized();
-		ofQuaternion rotateCamera;
+		auto arcEnd = glm::normalize(glm::vec3(mouseMovement.x, -mouseMovement.y, -this->userSettings.trackballRadius * this->view.viewport.getWidth()));
+        ofQuaternion temp_rotateCamera;
 		auto cameraOrientation = this->getOrientationQuat();
-		rotateCamera.makeRotate(cameraOrientation * ofVec3f(0.0f, 0.0f, -1.0f), cameraOrientation * arcEnd);
+		
+		// there is no direct replacement in GLM for ofQuaternion::makeRotate(const ofVec3f& vec1, const ofVec3f& vec2);
+		// Now simply using ofQuaternion as impleenting the same thing is longer
+		
+		temp_rotateCamera.makeRotate((cameraOrientation * glm::vec3(0.0f, 0.0f, -1.0f)), cameraOrientation * arcEnd);
+        glm::quat rotateCamera = temp_rotateCamera;
 
 		if (this->userSettings.fixUpDirection) {
-			ofQuaternion rotToUp;
-			ofVec3f sideDir = ofCamera::getSideDir() * rotateCamera;
-			rotToUp.makeRotate(sideDir, sideDir * ofVec3f(1.0, 0.0f, 1.0f));
+			glm::quat rotToUp;
+            ofQuaternion temp;
+			glm::vec3 sideDir =  rotateCamera * cameraSideDirection;// ofCamera::getSideDir();
+			temp.makeRotate(sideDir, sideDir * glm::vec3(1.0, 0.0f, 1.0f));
+            rotToUp = temp;
 			rotateCamera *= rotToUp;
 		}
 
-		this->setOrientation(cameraOrientation * rotateCamera);
-		ofCamera::setPosition((-cameraToMouse) * rotateCamera + this->tracking.mouse.world);
+		this->setOrientation(rotateCamera * cameraOrientation);
+		ofCamera::setPosition(rotateCamera * (-cameraToMouse)  + this->tracking.mouse.world);
 		break;
 	}
 	case Action::Pan:
@@ -464,7 +471,7 @@ void ofxGrabCam::removeListeners() {
 //--------------------------
 ofxGrabCam::MouseInViewport ofxGrabCam::getMouseInViewport(const ofMouseEventArgs & args) {
 	MouseInViewport mouseInViewport = {
-		ofVec2f(args.x - this->view.viewport.x, args.y - this->view.viewport.y),
+		glm::vec2(args.x - this->view.viewport.x, args.y - this->view.viewport.y),
 		this->view.viewport.inside(args.x, args.y)
 	};
 	return mouseInViewport;
