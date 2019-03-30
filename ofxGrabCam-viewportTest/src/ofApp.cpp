@@ -2,22 +2,19 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	for (int i=0; i<100; i++)
-	{
-		positions.push_back(glm::vec3(ofRandom(-10, 10),
-									ofRandom(-10, 10),
-									ofRandom(-10, 10)));
+	spheres.resize(100);
+	for (auto& s: spheres){
+		s.position = glm::vec3(ofRandom(-10, 10),
+							   ofRandom(-10, 10),
+							   ofRandom(-10, 10));
 		
-		colours.push_back(ofColor(ofRandom(100) + 100,
-								  ofRandom(100) + 100,
-								  ofRandom(100) + 100));
+		s.color = ofColor(ofRandom(100) + 100,
+						  ofRandom(100) + 100,
+						  ofRandom(100) + 100);
 	}
 	
 	ofBackground(100, 100, 100);
 	ofEnableSmoothing();
-	
-	// You might need to do this in the future if openFrameworks changes currently it's done automatically in the constructor, but this may be too early for openFrameworks (if the current situation changes)
-	// camera.init();
 	
 	randomiseViewport();
 	useViewport = false;
@@ -40,12 +37,9 @@ void ofApp::draw(){
 	ofSetColor(255,100,100);
 	ofDrawGrid(10.0f, 5.0f, true);
 	
-	auto p = positions.begin();
-	auto c = colours.begin();
-	for (; p != positions.end(); p++, c++)
-	{
-		ofSetColor(*c);
-		ofDrawSphere(p->x, p->y, p->z, 1);
+	for (auto& s: spheres){
+		ofSetColor(s.color);
+		ofDrawSphere(s.position, 1);
 	}
 	//demonstrate resiliance to stray matrices
 	ofRotateDeg(ofRandom(360), 0, 1, 0);

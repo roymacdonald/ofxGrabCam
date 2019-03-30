@@ -18,12 +18,14 @@ public:
 	
 	////
 	//scene
-	vector<glm::vec3> positions;
-	vector<ofColor> colours;
+	struct Sphere{
+		glm::vec3 position;
+		ofColor color;
+	};
+	vector<Sphere> spheres;
 	//
 	////
 	
 	bool useViewport;
 	ofRectangle viewport;
-	ofMatrix4x4 savedPose;
 };
