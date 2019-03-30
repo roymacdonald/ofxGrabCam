@@ -99,10 +99,6 @@ protected:
 	struct {
 		ofRectangle viewport;
 		ofShortPixels sampleNeighbourhood;
-
-		struct {
-			GLint viewport[4];
-		} opengl;
 	} view;
 
 	struct {
@@ -115,10 +111,5 @@ protected:
 			bool enabled;
 			float size;
 		} cursorDraw;
-
-		struct {
-			glm::vec3 position;
-			glm::quat rotation;
-		} defaultView;
 	} userSettings;
 };

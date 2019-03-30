@@ -25,10 +25,7 @@ ofxGrabCam::ofxGrabCam() {
 	this->tracking.mouse.viewport.withinViewport = false;
 	this->tracking.mouse.projectedDepth = 0.0f;
 
-	for (int i = 0; i < 4; i++) {
-		this->view.opengl.viewport[i] = 0;
-	}
-
+	
 	this->userSettings.listenersEnabled = true;
 	this->userSettings.mouseActionsEnabled = true;
 	this->userSettings.fixUpDirection = false;
@@ -60,11 +57,12 @@ void ofxGrabCam::begin(ofRectangle viewport) {
 		}
 	}
 
-	glEnable(GL_DEPTH_TEST);
+	ofEnableDepthTest();
 	this->view.viewport = viewport;
 	ofCamera::begin(viewport);
 	
-	glGetIntegerv(GL_VIEWPORT, this->view.opengl.viewport);
+//	glGetIntegerv(GL_VIEWPORT, this->view.opengl.viewport);
+	viewport = ofGetNativeViewport();
 
 	ofPushMatrix();
 }
@@ -122,7 +120,7 @@ void ofxGrabCam::end() {
 	//--
 
 	ofCamera::end();
-	glDisable(GL_DEPTH_TEST);
+	ofDisableDepthTest();
 	
 	//--
 	// Draw the 2D cursor info box
