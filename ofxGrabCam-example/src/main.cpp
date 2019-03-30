@@ -1,17 +1,15 @@
 #include "ofMain.h"
-#include "testApp.h"
-#include "ofAppGlutWindow.h"
+#include "ofApp.h"
 
 //========================================================================
 int main( ){
+	ofGLWindowSettings settings;
+	settings.setGLVersion(3,2);
+	settings.setSize(1280, 1024);
+	settings.windowMode = OF_WINDOW;
 
-	ofGLFWWindowSettings windowSettings;
-	windowSettings.setGLVersion(3, 1);
-	windowSettings.width = 1280;
-	windowSettings.height = 1024;
-	windowSettings.windowMode = OF_WINDOW;
+    ofCreateWindow(settings);			// <-------- setup the GL context
 
-	ofCreateWindow(windowSettings);
 
-	ofRunApp(new testApp());
+	ofRunApp(new ofApp());
 }

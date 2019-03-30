@@ -1,10 +1,10 @@
-#include "testApp.h"
+#include "ofApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup(){
+void ofApp::setup(){
 	for (int i=0; i<300; i++)
 	{
-		auto position = ofVec3f(ofRandom(-10, 10),
+		auto position = glm::vec3(ofRandom(-10, 10),
 			ofRandom(-10, 10),
 			ofRandom(-10, 10));
 		
@@ -26,12 +26,12 @@ void testApp::setup(){
 }
 
 //--------------------------------------------------------------
-void testApp::update(){
+void ofApp::update(){
 
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){
+void ofApp::draw(){
 
 	//--
 	//draw 3d bits
@@ -53,7 +53,7 @@ void testApp::draw(){
 		ofSetColor(0, 0, 0);
 
 		ofDrawBitmapStringHighlight("ofxGrabCam Example", 30, 30, ofColor::darkSlateGray, ofColor::white);
-		ofDrawBitmapString("ofxGrabCam Example", 31, 30); //embolden
+		ofDrawBitmapString("ofxGrabCam Example", 31, 31); //embolden
 
 		stringstream message;
 		message << "ofxGrabCam keys:" << endl;
@@ -95,22 +95,22 @@ void testApp::draw(){
 }
 
 //--------------------------------------------------------------
-void testApp::drawScene() {
+void ofApp::drawScene() {
 	ofSetColor(255, 100, 100);
 	ofDrawGrid(1.0f, 10.0f, true);
 	for (auto & sphere : this->spheres)
 	{
 		ofSetColor(sphere.color);
-		ofSphere(sphere.position, 0.3f);
+		ofDrawSphere(sphere.position, 0.3f);
 	}
 
 	//demonstrate resiliance to stray matrices
-	ofRotate(ofRandom(360), 0, 1, 0);
+	ofRotateDeg(ofRandom(360), 0, 1, 0);
 	ofScale(ofRandom(30), ofRandom(30));
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key) {
+void ofApp::keyPressed(int key) {
 
 	if (key == 'c') {
 		camera.toggleCursorDrawEnabled();

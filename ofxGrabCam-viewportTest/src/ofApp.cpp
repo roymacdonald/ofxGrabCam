@@ -1,10 +1,10 @@
-#include "testApp.h"
+#include "ofApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup(){
+void ofApp::setup(){
 	for (int i=0; i<100; i++)
 	{
-		positions.push_back(ofVec3f(ofRandom(-10, 10),
+		positions.push_back(glm::vec3(ofRandom(-10, 10),
 									ofRandom(-10, 10),
 									ofRandom(-10, 10)));
 		
@@ -24,16 +24,13 @@ void testApp::setup(){
 }
 
 //--------------------------------------------------------------
-void testApp::update(){
+void ofApp::update(){
 
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){
+void ofApp::draw(){
 
-	vector<ofVec3f>::iterator p = positions.begin();
-	vector<ofColor>::iterator c = colours.begin();
-	
 	////
 	//draw scene
 	if (useViewport)
@@ -42,13 +39,16 @@ void testApp::draw(){
 		camera.begin();
 	ofSetColor(255,100,100);
 	ofDrawGrid(10.0f, 5.0f, true);
+	
+	auto p = positions.begin();
+	auto c = colours.begin();
 	for (; p != positions.end(); p++, c++)
 	{
 		ofSetColor(*c);
-		ofSphere(p->x, p->y, p->z, 1);
+		ofDrawSphere(p->x, p->y, p->z, 1);
 	}
 	//demonstrate resiliance to stray matrices
-	ofRotate(ofRandom(360), 0, 1, 0);
+	ofRotateDeg(ofRandom(360), 0, 1, 0);
 	camera.end();
 	//
 	////
@@ -57,7 +57,7 @@ void testApp::draw(){
 		ofPushStyle();
 		ofSetColor(255,255,255);
 		ofNoFill();
-		ofRect(viewport);
+		ofDrawRectangle(viewport);
 		ofPopStyle();
 	}
 	
@@ -79,12 +79,12 @@ void testApp::draw(){
 	ofDrawBitmapString("Press [v] to toggle viewport " + (useViewport ? string("[x]") : string("[ ]")), 10, row++ * 15);
 	
 	//demonstrate resiliance to stray matrices
-	ofRotate(ofRandom(360), 0, 1, 0);
+	ofRotateDeg(ofRandom(360), 0, 1, 0);
 	ofScale(ofRandom(30), ofRandom(30));
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key){
+void ofApp::keyPressed(int key){
 	
 	if (key==' ')
 		randomiseViewport();
@@ -93,20 +93,14 @@ void testApp::keyPressed(int key){
 		useViewport ^= true;
 	
 	if (key=='c')
-		camera.toggleCursorDraw();
+		camera.toggleCursorDrawEnabled();
 	
 	if (key=='u')
-		camera.toggleFixUpwards();
-	
-	if (key=='s')
-		savedPose = camera.getGlobalTransformMatrix();
-	
-	if (key=='l')
-		camera.setTransformMatrix(savedPose);
+		camera.toggleFixUpDirectionEnabled();
 	
 }
 //--------------------------------------------------------------
-void testApp::randomiseViewport() {
+void ofApp::randomiseViewport() {
 	viewport.x = ofRandom(0,ofGetWidth()/2);
 	viewport.y = ofRandom(0,ofGetHeight()/2);
 	viewport.width = ofRandom(256, ofGetWidth() - viewport.x);

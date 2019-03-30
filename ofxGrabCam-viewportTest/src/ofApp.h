@@ -4,7 +4,7 @@
 
 #include "ofxGrabCam.h"
 
-class testApp : public ofBaseApp{
+class ofApp : public ofBaseApp{
 
 public:
 	void setup();
@@ -18,7 +18,7 @@ public:
 	
 	////
 	//scene
-	vector<ofVec3f> positions;
+	vector<glm::vec3> positions;
 	vector<ofColor> colours;
 	//
 	////
